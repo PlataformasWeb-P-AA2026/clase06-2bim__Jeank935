@@ -12,7 +12,7 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'estudiantes', views.EstudianteViewSet)
 router.register(r'numerosts', views.NumeroTelefonicoViewSet)
-
+router.register(r'direcciones', views.DireccionViewSet)
 
 urlpatterns = [
         path('', views.index, name='index'),
