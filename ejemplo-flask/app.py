@@ -162,9 +162,6 @@ def crear_numero_telefonico():
                            )
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 @app.route("/las/direcciones")
 def las_direcciones():
     """
@@ -180,3 +177,43 @@ def las_direcciones():
     numero_direcciones = json.loads(r.content)['count']
     return render_template("lasdirecciones.html", direcciones=direcciones,
     numero_direcciones=numero_direcciones)
+
+
+@app.route("/crear/direcciones", methods=['GET', 'POST'])
+def crear_direcciones():
+    """
+    """
+    estudiantes_disponibles = []
+
+    r_estudiantes = requests.get("http://localhost:8000/api/estudiantes/", headers=headers)
+    estudiantes_disponibles = json.loads(r_estudiantes.content)['results']
+
+    if request.method == 'POST':
+        descripcion = request.form['descripcion']
+        tipo = request.form['tipo']
+
+        estudiante_url = request.form['estudiante']
+
+        direcciones_data = {
+            'descripcion': descripcion,
+            'tipo': tipo,
+            'estudiante': estudiante_url # Enviamos la URL del estudiante
+        }
+
+        r = requests.post("http://localhost:8000/api/direcciones/",
+                              json=direcciones_data,
+                              headers=headers)
+
+        print(f"Status Code (Crear direccion): {r.status_code}")
+
+        nueva_direccion = json.loads(r.content)
+        flash(f"Direccion '{nueva_direccion['descripcion']}' creado exitosamente para el estudiante!", 'success')
+        return redirect(url_for('las_direcciones')) # Redirigir a la lista principal o a una de números
+
+    return render_template("crear_direcciones.html",
+                           estudiantes=estudiantes_disponibles,
+                           )
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
